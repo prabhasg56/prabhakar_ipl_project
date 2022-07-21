@@ -174,3 +174,43 @@ fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/publi
         console.log("Number of times each team won the toss and match JSON File Created Succesfully");
     }
 });
+
+
+//Q2. Find a player who has won the highest number of Player of the Match awards for each season
+
+//Q3. Find the strike rate of a batsman for each season
+
+//Q4. Find the highest number of times one player has been dismissed by another player
+
+const numberOfPlayerDismissed = (deliveries) => {
+    const resultNumberOfPlayerDismissed = {};
+
+    deliveries.filter((deliveriesData) => {
+        if (!deliveriesData.player_dismissed) {
+            return true;
+        }
+        else if (resultNumberOfPlayerDismissed.hasOwnProperty(deliveriesData.player_dismissed)) {
+            resultNumberOfPlayerDismissed[deliveriesData.player_dismissed] += 1;
+        }
+        else {
+            resultNumberOfPlayerDismissed[deliveriesData.player_dismissed] = 1;
+        }
+    })
+    return Object.entries(resultNumberOfPlayerDismissed).sort((a,b)=>b[1]-a[1])[0];
+}
+
+//Calling function and JSON file 
+
+const resultNumberOfPlayerDismissed = numberOfPlayerDismissed(deliveries);
+//console.log(resultNumberOfPlayerDismissed);
+fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/numberOfPlayerDismissed.json', JSON.stringify(resultNumberOfPlayerDismissed), (error) => {
+    if (error) {
+        console.log(error);
+    }
+    else {
+        console.log("highest number of times one player has been dismissed by another player JSON File Created Succesfully");
+    }
+});
+
+
+//Q5. Find the bowler with the best economy in super overs
