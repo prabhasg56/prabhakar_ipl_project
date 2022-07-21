@@ -3,6 +3,7 @@ let matches = csvToJson.fieldDelimiter(',').getJsonFromCsv('/home/prabhas/Deskto
 let deliveries = csvToJson.fieldDelimiter(',').getJsonFromCsv('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/server/deliveries.csv');
 const fs = require('fs')
 //console.log(matches)
+
 //Q1. Number of matches played per year for all the years in IPL.
 
 function matchesPlayedPerYear(matches) {
@@ -142,4 +143,34 @@ fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/publi
     }
 });
 
+//Extra Problems
+//Q1. Find the number of times each team won the toss and also won the match
 
+function numberOfTimesWonAndTossWon(matches) {
+    const eachTeamWon = {};
+    matches.filter((matchData) => {
+        if (matchData.toss_winner === matchData.winner) {
+            if (eachTeamWon.hasOwnProperty(matchData.toss_winner)) {
+                eachTeamWon[matchData.toss_winner] += 1;
+            }
+            else {
+                eachTeamWon[matchData.toss_winner] = 1;
+            }
+        }
+    })
+    return eachTeamWon;
+}
+
+//For calling and JSON file
+
+const resultEachTeamWon = numberOfTimesWonAndTossWon(matches);
+//console.log(resultEachTeamWon);
+
+fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/numberOfTimesWonAndTossWon.json', JSON.stringify(resultEachTeamWon), (error) => {
+    if (error) {
+        console.log(error);
+    }
+    else {
+        console.log("Number of times each team won the toss and match JSON File Created Succesfully");
+    }
+});
