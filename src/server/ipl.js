@@ -128,7 +128,7 @@ function economicalBowlers(matchesData, deliveriesData, year) {
         }
     })
 
-    return Object.entries(bowlers).sort((a, b) => a[1].economy - b[1].economy).slice(0, 10);
+    return Object.entries(bowlers).sort((firstItem, nextItem) => firstItem[1].economy - nextItem[1].economy).slice(0, 10);
 }
 
 //For Calling and JSON file 
@@ -196,7 +196,7 @@ const numberOfPlayerDismissed = (deliveries) => {
             resultNumberOfPlayerDismissed[deliveriesData.player_dismissed] = 1;
         }
     })
-    return Object.entries(resultNumberOfPlayerDismissed).sort((a,b)=>b[1]-a[1])[0];
+    return Object.entries(resultNumberOfPlayerDismissed).sort((a, b) => b[1] - a[1])[0];
 }
 
 //Calling function and JSON file 
@@ -214,3 +214,38 @@ fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/publi
 
 
 //Q5. Find the bowler with the best economy in super overs
+
+const findSuperOverEconomy = (delivery) => {
+    let resultSuperOverEconomy = {};
+
+    delivery.filter((deliveryData) => {
+        if (resultSuperOverEconomy.hasOwnProperty(deliveryData.bowler)) {
+
+            if (deliveryData.is_super_over != 0) {
+                resultSuperOverEconomy[deliveryData.bowler].balls += 1;
+                resultSuperOverEconomy[deliveryData.bowler].runs += parseInt(deliveryData.total_runs);
+
+                resultSuperOverEconomy[deliveryData.bowler].economy = (resultSuperOverEconomy[deliveryData.bowler].runs / (resultSuperOverEconomy[deliveryData.bowler].balls / 6)).toFixed(2);
+            }
+        }
+        else {
+            if (deliveryData.is_super_over != 0) {
+                resultSuperOverEconomy[deliveryData.bowler] = { "runs": parseInt(deliveryData.total_runs), "balls": 1, "economy": 0 };
+            }
+        }
+    })
+    return Object.entries(resultSuperOverEconomy).sort((firstItem, nextItem) => firstItem[1].economy - nextItem[1].economy)[0];
+}
+
+//Calling function and JSON file
+
+const resultSuperOverEconomy = findSuperOverEconomy(deliveries);
+//console.log(resultSuperOverEconomy);
+fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/bestEconomySuperOver.json', JSON.stringify(resultSuperOverEconomy), (error) => {
+    if (error) {
+        console.log(error);
+    }
+    else {
+        console.log("Best economy in super overs JSON File Created Succesfully");
+    }
+});
