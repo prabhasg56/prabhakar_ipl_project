@@ -12,8 +12,7 @@ function matchesPlayedPerYear(matches) {
         let year = (match.season)
         if (matchPerYear[year]) {
             matchPerYear[year] += 1;
-        }
-        else {
+        } else {
             matchPerYear[year] = 1;
         }
     })
@@ -25,8 +24,7 @@ let resultMatchesPlayedPerYear = matchesPlayedPerYear(matches);
 fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/matchesPlayedPerYear.json', JSON.stringify(resultMatchesPlayedPerYear), (error) => {
     if (error) {
         console.log(error);
-    }
-    else {
+    } else {
         console.log("Number of matches played per year File Created Succesfully");
     }
 });
@@ -41,12 +39,12 @@ function matchesWonPerYear(matchesData) {
         let season = matchData.season
         let Winners = matchData.winner
 
-        if (!(season in matchesPerYear))
+        if (!(season in matchesPerYear)) {
             matchesPerYear[season] = {}
+        }
         if (Winners in matchesPerYear[season]) {
             matchesPerYear[season][Winners] += 1
-        }
-        else {
+        } else {
             matchesPerYear[season][Winners] = 1
         }
     })
@@ -58,8 +56,7 @@ let resultMatchesWonPerYear = matchesWonPerYear(matches);
 fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/numberOfMatchesWonPerYear.json', JSON.stringify(resultMatchesWonPerYear), (error) => {
     if (error) {
         console.log(error);
-    }
-    else {
+    } else {
         console.log("Number of matches won per year File Created Succesfully");
     }
 });
@@ -77,8 +74,7 @@ function extraRunByPerTeam(matchesData, deliveriesData, year) {
                 if (deliveryData.match_id === id) {
                     if (ExtraRunByTeams[deliveryData.bowling_team]) {
                         ExtraRunByTeams[deliveryData.bowling_team] += parseInt(deliveryData.extra_runs);
-                    }
-                    else {
+                    } else {
                         ExtraRunByTeams[deliveryData.bowling_team] = parseInt(deliveryData.extra_runs);
                     }
                 }
@@ -95,8 +91,7 @@ let resultExtraRun = extraRunByPerTeam(matches, deliveries, year);
 fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/extraRunByPerTeamIn2016.json', JSON.stringify(resultExtraRun), (error) => {
     if (error) {
         console.log(error);
-    }
-    else {
+    } else {
         console.log("Extra run conceded in the year 2016 JSON File Created Succesfully");
     }
 });
@@ -113,13 +108,11 @@ function economicalBowlers(matchesData, deliveriesData, year) {
             deliveriesData.filter((deliveryData) => {
                 if (deliveryData.match_id === id) {
                     if (deliveryData.wide_runs == 0 && deliveryData.noball_runs == 0) {
-
                         if (bowlers[deliveryData.bowler]) {
                             bowlers[deliveryData.bowler].totalBalls += 1
                             bowlers[deliveryData.bowler].totalRuns += parseFloat(deliveryData.total_runs)
                             bowlers[deliveryData.bowler].economy = ((bowlers[deliveryData.bowler].totalRuns) / (bowlers[deliveryData.bowler].totalBalls / 6)).toFixed(2);
-                        }
-                        else {
+                        } else {
                             bowlers[deliveryData.bowler] = { "totalRuns": parseFloat(deliveryData.total_runs), "totalBalls": 1, "economy": 0 }
                         }
                     }
@@ -134,11 +127,11 @@ function economicalBowlers(matchesData, deliveriesData, year) {
 //For Calling and JSON file 
 let year1 = 2015;
 let resultTop10Bowlwrs = economicalBowlers(matches, deliveries, year1);
+//console.log(resultTop10Bowlwrs)
 fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/top10EconomicalBowler.json', JSON.stringify(resultTop10Bowlwrs), (error) => {
     if (error) {
         console.log(error);
-    }
-    else {
+    } else {
         console.log("Top 10 economical bowlers in the year 2015 JSON File Created Succesfully");
     }
 });
@@ -152,8 +145,7 @@ function numberOfTimesWonAndTossWon(matches) {
         if (matchData.toss_winner === matchData.winner) {
             if (eachTeamWon.hasOwnProperty(matchData.toss_winner)) {
                 eachTeamWon[matchData.toss_winner] += 1;
-            }
-            else {
+            } else {
                 eachTeamWon[matchData.toss_winner] = 1;
             }
         }
@@ -169,8 +161,7 @@ const resultEachTeamWon = numberOfTimesWonAndTossWon(matches);
 fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/numberOfTimesWonAndTossWon.json', JSON.stringify(resultEachTeamWon), (error) => {
     if (error) {
         console.log(error);
-    }
-    else {
+    } else {
         console.log("Number of times each team won the toss and match JSON File Created Succesfully");
     }
 });
@@ -178,7 +169,86 @@ fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/publi
 
 //Q2. Find a player who has won the highest number of Player of the Match awards for each season
 
+playerHighestAwards = (matches) => {
+    let object = {};
+    let result = {};
+    let maxSeason = 2017;
+
+    matches.filter((matchData) => {
+
+        if (matchData.season == maxSeason) {
+            let key = matchData.player_of_match;
+            if (object.hasOwnProperty(key)) {
+                object[key] += 1;
+            } else {
+                object[key] = 1;
+            }
+        } else {
+            result[maxSeason] = Object.entries(object).sort((a, b) => b[1] - a[1])[0]
+            maxSeason = matchData.season;
+            object = {};
+        }
+    });
+
+    return result;
+}
+
+const resultplayerHighestAwards = playerHighestAwards(matches)
+fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/playerWonHighNoOfAward.json', JSON.stringify(resultplayerHighestAwards), (error) => {
+    if (error) {
+        console.log(error);
+    } else {
+        console.log("Player highest Match Award JSON File Created Succesfully");
+    }
+});
+
+
 //Q3. Find the strike rate of a batsman for each season
+
+const batsmanStrikeRate = (matches, deliveries) => {
+
+    const matchIdSeason = {};
+    const resultStrikeRate = {};
+
+    matches.filter((matchData) => {
+        matchIdSeason[matchData.id] = matchData.season;
+
+        deliveries.filter((deliveriesData) => {
+            let key = deliveriesData.batsman;
+            let season_key = matchIdSeason[deliveriesData.match_id];
+
+            if (resultStrikeRate.hasOwnProperty(key))   // if batsman exist in result
+            {
+                if (resultStrikeRate.key.hasOwnProperty(season_key)) //batsman + season both exists
+                {
+                    resultStrikeRate.key.season_key.total_runs += parseInt(deliveriesData.batsman_runs);
+                    resultStrikeRate.key.season_key.balls += 1;
+                    resultStrikeRate.key.season_key.strikeRate = (resultStrikeRate.key.season_key.total_runs * 100) / resultStrikeRate.key.season_key.balls;
+                } else {  //batsman exist, but season dont exist
+                    resultStrikeRate.key.season_key = { "runs": parseInt(deliveriesData.batsman_runs), "balls": 1, "strikeRate": deliveriesData.batsman_runs100 };
+                }
+            } else { //current batsman dont exist in result
+
+                resultStrikeRate.key = { [season_key]: { "runs": parseInt(deliveriesData.batsman_runs), "balls": 1, "strikeRate": parseFloat(deliveriesData.batsman_runs) * 100 } };
+            }
+        });
+    });
+    return resultStrikeRate;
+}
+
+// Calling function and JSON file
+
+const resultStrikeRate = batsmanStrikeRate(matches, deliveries);
+//console.log(resultStrikeRate);
+fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/batsmanStrikeRate.json', JSON.stringify(resultStrikeRate), (error) => {
+    if (error) {
+        console.log(error);
+    } else {
+        console.log("Batsman strike rate JSON File Created Succesfully");
+    }
+});
+
+
 
 //Q4. Find the highest number of times one player has been dismissed by another player
 
@@ -188,11 +258,9 @@ const numberOfPlayerDismissed = (deliveries) => {
     deliveries.filter((deliveriesData) => {
         if (!deliveriesData.player_dismissed) {
             return true;
-        }
-        else if (resultNumberOfPlayerDismissed.hasOwnProperty(deliveriesData.player_dismissed)) {
+        } else if (resultNumberOfPlayerDismissed.hasOwnProperty(deliveriesData.player_dismissed)) {
             resultNumberOfPlayerDismissed[deliveriesData.player_dismissed] += 1;
-        }
-        else {
+        } else {
             resultNumberOfPlayerDismissed[deliveriesData.player_dismissed] = 1;
         }
     })
@@ -206,8 +274,7 @@ const resultNumberOfPlayerDismissed = numberOfPlayerDismissed(deliveries);
 fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/numberOfPlayerDismissed.json', JSON.stringify(resultNumberOfPlayerDismissed), (error) => {
     if (error) {
         console.log(error);
-    }
-    else {
+    } else {
         console.log("highest number of times one player has been dismissed by another player JSON File Created Succesfully");
     }
 });
@@ -227,8 +294,7 @@ const findSuperOverEconomy = (delivery) => {
 
                 resultSuperOverEconomy[deliveryData.bowler].economy = (resultSuperOverEconomy[deliveryData.bowler].runs / (resultSuperOverEconomy[deliveryData.bowler].balls / 6)).toFixed(2);
             }
-        }
-        else {
+        } else {
             if (deliveryData.is_super_over != 0) {
                 resultSuperOverEconomy[deliveryData.bowler] = { "runs": parseInt(deliveryData.total_runs), "balls": 1, "economy": 0 };
             }
@@ -244,8 +310,8 @@ const resultSuperOverEconomy = findSuperOverEconomy(deliveries);
 fs.writeFile('/home/prabhas/Desktop/MountBlueAssignment/JavaScript/IPL/src/public/output/bestEconomySuperOver.json', JSON.stringify(resultSuperOverEconomy), (error) => {
     if (error) {
         console.log(error);
-    }
-    else {
+    } else {
         console.log("Best economy in super overs JSON File Created Succesfully");
     }
 });
+
